@@ -1,0 +1,433 @@
+<style type="text/css">
+    body {
+        background-image: url('asset/img/grid-18px-masked.png');
+        background-repeat: repeat-x;
+    }
+    h1{
+        margin-bottom: 40px;
+    }
+    .droppable{
+        background-color: #002a80;
+    }
+    .wireframe .container-fluid{
+        min-height: 30px;
+        margin-bottom: 20px;
+    }
+    .wireframe .row-fluid{
+        min-height: 30px;
+        margin-bottom: 20px;
+    }
+    [class^="span"]{
+        min-height: 30px;
+        margin-bottom: 20px;
+    }
+    .wireframe{
+        min-height: 300px;
+        border: solid 1px #ccc;
+    }
+    .wireframe *{
+        border: dashed 1px #ccc;
+    }
+</style>
+
+<div data-alt-menu="appmenu"></div>
+
+<div style="position:fixed; top: 40px; left: 30%; width: 40%; z-index: 998;">
+    <div data-ng-repeat="alert in $alert.items">
+        <div data-alt-alert="alert">
+            {{ alert.message }}
+        </div>
+    </div>
+</div>
+
+<div data-alt-breadcrumbs="breadcrumbs"></div>
+
+<div class="bs-docs-example container-fluid">
+    <section data-ng-show="step.current == 'welcome'">
+        <form class="form-horizontal">
+            <div class="row-fluid">
+                <div class="span12">
+                    <h1>
+                        Alright! Welcome to Prototyper Editor!
+                    </h1>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <fieldset class="span6">
+                    <legend>
+                        First, let us know what your application called
+                        <span data-alt-blink data-interval="300">_</span>
+                    </legend>
+                    <div class="control-group">
+                        <label class="control-label" for="appid">ID</label>
+                        <div class="controls">
+                            <input type="text" id="appid" class="span4" placeholder="Application ID" data-ng-model="application.id">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="appname">Name</label>
+                        <div class="controls">
+                            <input type="text" id="appname" class="span8" placeholder="Application Name" data-ng-model="application.name">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="appdesc">Description</label>
+                        <div class="controls">
+                            <input type="text" id="appdesc" class="span10" placeholder="Description" data-ng-model="application.description">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <div data-alt-button="welcome.btncreate"></div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="span6">
+                    <legend>
+                        Or do you want to submit your application to our showcase?
+                    </legend>
+                    <div class="control-group">
+                        <label class="control-label" for="appid">ID</label>
+                        <div class="controls">
+                            <input type="text" id="appid" class="span4" placeholder="Application ID" data-ng-model="application.id">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">File</label>
+                        <div class="controls">
+                            <div data-alt-file="welcome.file"></div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <div data-alt-button="welcome.btnupload"></div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </form>
+    </section>
+
+    <section data-ng-show="step.current == 'menu'">
+        <form class="form-horizontal">
+            <div class="row-fluid">
+                <div class="span12">
+                    <h1>
+                        Well done! Now lets create some menus!
+                        <div data-alt-button="step.btnnext" class="pull-right"></div>
+                        <div data-alt-button="step.btnprev" class="pull-right"></div>
+                    </h1>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span3 bs-docs-sidebar">
+                    <legend>Menus</legend>
+                    <ul class="nav nav-list bs-docs-sidenav affix-top" style="margin-bottom: 10px;" >
+                        <li data-ng-repeat="(id, item) in application.menus">
+                            <a data-ng-click="menu.choose(id, item)" style="cursor: pointer;">
+                                {{ id }}
+                                <i class="fa fa-chevron-right pull-right" style="padding-top: 3px;"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="span9">
+                    <legend>Preview</legend>
+                    <div data-alt-menu="menu.current.display"></div>
+
+                    <legend style="margin-top: 50px;">
+                        Editor
+                        <div data-alt-button="menu.btndelete" class="pull-right"></div>
+                        <div data-alt-button="menu.btnreset" class="pull-right"></div>
+                        <div data-alt-button="menu.btnsave" class="pull-right"></div>
+                    </legend>
+                    <fieldset>
+                        <div class="control-group">
+                            <label class="control-label" for="appid">Menu ID</label>
+                            <div class="controls">
+                                <input type="text" id="menu.current" class="span4" placeholder="Menu ID" data-ng-model="menu.current.id">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <table class="table table-bordered" data-ng-init="btnadd = menu.btnadd(menu.current.display, 'menu')">
+                                <thead>
+                                <tr>
+                                    <td width="30px">ID</td>
+                                    <td>Label</td>
+                                    <td width="200px">Page</td>
+                                    <td width="40px">Action</td>
+                                </tr>
+                                </thead>
+                                <tbody data-ng-repeat="item in menu.current.display.menu track by $index">
+                                <tr data-ng-init="btnremove = menu.btnremove($index, item, menu.current.display, 'menu')">
+                                    <td data-ng-init="item.id = $index+1;">
+                                        <input type="text" class="span12" data-ng-model="item.id" disabled="disabled"/>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="span12" data-ng-model="item.label"/>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="span12" data-ng-model="item.page"/>
+                                    </td>
+                                    <td>
+                                        <div data-alt-button="btnremove" class="pull-right"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td colspan="3">
+                                        <table class="table table-bordered" data-ng-init="btnadd = menu.btnadd(item, 'submenu')">
+                                            <thead>
+                                            <tr>
+                                                <td width="80px">ID</td>
+                                                <td>Label</td>
+                                                <td width="200px">Page</td>
+                                                <td width="40px">Action</td>
+                                            </tr>
+                                            </thead>
+                                            <tbody data-ng-repeat="item2 in item.submenu track by $index">
+                                            <tr data-ng-init="btnremove = menu.btnremove($index, item2, item, 'submenu')">
+                                                <td data-ng-init="item2.id = item.id + '.' + ($index+1);">
+                                                    <input type="text" class="span12" data-ng-model="item2.id" disabled="disabled"/>
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="span12" data-ng-model="item2.label"/>
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="span12" data-ng-model="item2.page"/>
+                                                </td>
+                                                <td>
+                                                    <div data-alt-button="btnremove" class="pull-right"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>&nbsp;</td>
+                                                <td colspan="3">
+                                                    <table class="table table-bordered" data-ng-init="btnadd = menu.btnadd(item2, 'submenu')">
+                                                        <thead>
+                                                        <tr>
+                                                            <td width="80px">ID</td>
+                                                            <td>Label</td>
+                                                            <td width="200px">Page</td>
+                                                            <td width="40px">Action</td>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody data-ng-repeat="item3 in item2.submenu track by $index">
+                                                        <tr data-ng-init="btnremove = menu.btnremove($index, item3, item2, 'submenu')">
+                                                            <td data-ng-init="item3.id = item2.id + '.' + ($index+1);">
+                                                                <input type="text" class="span12" data-ng-model="item3.id" disabled="disabled"/>
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="span12" data-ng-model="item3.label"/>
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="span12" data-ng-model="item3.page"/>
+                                                            </td>
+                                                            <td>
+                                                                <div data-alt-button="btnremove" class="pull-right"></div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>&nbsp;</td>
+                                                            <td colspan="3">
+                                                                <table class="table table-bordered" data-ng-init="btnadd = menu.btnadd(item3, 'submenu')">
+                                                                    <thead>
+                                                                    <tr>
+                                                                        <td width="80px">ID</td>
+                                                                        <td>Label</td>
+                                                                        <td width="200px">Page</td>
+                                                                        <td width="40px">Action</td>
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody data-ng-repeat="item4 in item3.submenu track by $index">
+                                                                    <tr data-ng-init="btnremove = menu.btnremove($index, item3, item2, 'submenu')">
+                                                                        <td data-ng-init="item4.id = item3.id + '.' + ($index+1);">
+                                                                            <input type="text" class="span12" data-ng-model="item4.id" disabled="disabled"/>
+                                                                        </td>
+                                                                        <td>
+                                                                            <input type="text" class="span12" data-ng-model="item4.label"/>
+                                                                        </td>
+                                                                        <td>
+                                                                            <input type="text" class="span12" data-ng-model="item4.page"/>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div data-alt-button="btnremove" class="pull-right"></div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                    <tfoot>
+                                                                    <tr>
+                                                                        <td colspan="4">
+                                                                            <div data-alt-button="btnadd" class="pull-right"></div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tfoot>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                        <tfoot>
+                                                        <tr>
+                                                            <td colspan="4">
+                                                                <div data-alt-button="btnadd" class="pull-right"></div>
+                                                            </td>
+                                                        </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <td colspan="4">
+                                                    <div data-alt-button="btnadd" class="pull-right"></div>
+                                                </td>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                </tr>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td colspan="4">
+                                        <div data-alt-button="btnadd" class="pull-right"></div>
+                                    </td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    <section data-ng-show="step.current == 'page'">
+        <form class="form-horizontal">
+            <div class="row-fluid">
+                <div class="span12">
+                    <h1>
+                        Almost finish! Now lets create some pages!
+                        <div data-alt-button="step.btnnext" class="pull-right"></div>
+                        <div data-alt-button="step.btnprev" class="pull-right"></div>
+                    </h1>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span3 bs-docs-sidebar">
+                    <legend>
+                        Page Editor
+                        <div data-alt-button="page.btndelete" class="pull-right"></div>
+                        <div data-alt-button="page.btnreset" class="pull-right"></div>
+                        <div data-alt-button="page.btnsave" class="pull-right"></div>
+                    </legend>
+                    <fieldset>
+                        <div class="control-group">
+                            <label class="control-label" for="appid" style="width: 50px;">Page ID</label>
+                            <div class="controls"  style="margin-left: 65px;">
+                                <input type="text" class="span12" id="page.current" class="span4" placeholder="Page ID" data-ng-model="page.current.id">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="appid" style="width: 50px;">Menu</label>
+                            <div class="controls"  style="margin-left: 65px;">
+                                <select data-ng-model="page.current.menu">
+                                    <option value="">No Menu</option>
+                                    <option data-ng-repeat="(id, item) in application.menus" value="{{ id }}">{{ id }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="appid" style="width: 50px;">Default?</label>
+                            <div class="controls"  style="margin-left: 65px;">
+                                <input type="checkbox" data-ng-model="page.current.isdefault">
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <legend style="margin-top: 10px;">Pages</legend>
+                    <ul class="nav nav-list bs-docs-sidenav affix-top" style="margin-bottom: 10px;" >
+                        <li data-ng-repeat="(id, item) in application.pages">
+                            <a data-ng-click="page.choose(id, item)" style="cursor: pointer;">
+                                {{ id }}
+                                <i class="fa fa-chevron-right pull-right" style="padding-top: 3px;"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="span7">
+                    <legend>
+                        Wireframe
+                        <div data-alt-button="page.btnpreview" class="pull-right"></div>
+                    </legend>
+                    <div class="span12" style="margin-left: 0;">
+                        <div data-alt-html="page.current" class="wireframe" data-alt-droppable="true" data-on-drop="$scope.page.ondrop(drag, drop, data, target)" contenteditable="true"></div>
+                    </div>
+                    <legend style="margin-top: 20px;">
+                        Component Configuration
+                        <div data-alt-button="page.btncompclear" class="pull-right"></div>
+                        <div data-alt-button="page.btncompsave" class="pull-right"></div>
+                    </legend>
+                    <div class="span12" style="margin-left: 0;">
+                        <div data-alt-codemirror="page.component"></div>
+                    </div>
+                </div>
+                <div class="span2">
+                    <legend>
+                        Components
+                    </legend>
+                    <div data-alt-collapse data-first="false">
+                        <div data-alt-accordion data-ng-repeat="type in page.components.type" data-title="{{ type.label }}">
+                            <div class="container-fluid">
+                                <div class="row-fluid" style="padding-bottom: 10px;" data-ng-repeat="componentid in type.components">
+                                    <div style="span12">
+                                        <div data-alt-draggable="true" data-text="{{ componentid }}" data-on-drag-start="$scope.page.ondragstart(element)" data-on-drag-end="$scope.page.ondragend(element)">{{ page.components.component[componentid].label }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </section>
+
+    <section data-ng-show="step.current == 'upload'">
+        <form class="form-horizontal">
+            <div class="row-fluid">
+                <div class="span12">
+                    <h1>
+                        Awesome! Here is JSON of your App!
+                        <div data-alt-button="upload.btnupload" class="pull-right"></div>
+                        <div data-alt-button="upload.btndownload" class="pull-right"></div>
+                        <div data-alt-button="step.btnprev" class="pull-right"></div>
+                    </h1>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    <div data-alt-codemirror data-mode="javascript" data-mime="application/json" data-text="upload.json"></div>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    <section data-ng-show="step.current == 'finish'">
+        <div class="row-fluid">
+            <div class="span12">
+                <h1>
+                    Congratulations! Your application has been submitted to our showcase!
+                </h1>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <h3>
+                    See <a data-ng-href="{{ alt.baseUrl }}showcase">showcase</a> to check your apps!
+                </h3>
+            </div>
+        </div>
+    </section>
+</div>
