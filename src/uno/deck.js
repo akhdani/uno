@@ -110,7 +110,7 @@ var Deck = {
         if(data.draw == 0){
             return card.color == '*' || data.color == card.color || data.number == card.number;
         }else{
-            return card.number == '+4' || (card.color == data.color && ['+2', 'skip', 'reverse'].indexOf(card.number) != -1);
+            return card.number == '+4' || (card.color == data.color && ['+2', 'skip', 'reverse'].indexOf(card.number) != -1) || (card.number == data.number && ['+2', 'skip', 'reverse'].indexOf(card.number) != -1);
         }
     }
 };
