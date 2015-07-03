@@ -1,6 +1,11 @@
 var Deck = require('./uno/deck'),
     Player = require('./uno/player');
 
+// array random helper
+Array.prototype.random = function () {
+    return this[Math.floor((Math.random()*this.length))];
+};
+
 var Uno = function(config){
     config = config || {};
     var self = this;
@@ -60,11 +65,15 @@ var Uno = function(config){
         var card = Deck.pop(self.decks);
         Deck.push(player.cards, card);
 
+        // check if decks is empty, reshuffle
+        if(self.decks.length == 0){
+            self.decks = self.piles.slice(0, self.piles.length-2);
+            self.piles.splice(0, self.piles.length-2);
+            Deck.shuffle(self.decks);
+        }
+
         // record action to game
         self.record(player, 'draw', card);
-
-        // do next turn
-        if(self.is_started) self.turn();
     };
 
     // called by player who drop a card
@@ -72,7 +81,7 @@ var Uno = function(config){
         // check if is droppable;
         if(!Deck.isdroppable(self.turn_data, card)) throw new Error('Card is not allowed to drop');
 
-        Deck.pop(player.cards, card);
+        if(player) Deck.pop(player.cards, card);
         Deck.push(self.piles, card);
         Deck.wildcard(self, card, action);
 
@@ -81,9 +90,6 @@ var Uno = function(config){
             card: card,
             action: action
         });
-
-        // do next turn
-        if(self.is_started) self.turn();
     };
 
     // called by player who yell uno
@@ -92,16 +98,16 @@ var Uno = function(config){
         if(player.cards.length == 1) player.is_uno = true;
 
         // check other players, not yelled uno when only have 1 card left
-        var is_other_uno = false
+        var is_other_uno = false;
         for(var i=0; i<self.players.length; i++) if(self.players[i] != player){
             var other_player = self.players[i];
             if(other_player.cards.length == 1 && !other_player.is_uno){
-                other_player.draw();
+                other_player.draw(1);
                 is_other_uno = true;
             }
         }
 
-        if(!is_other_uno) player.draw();
+        if(!is_other_uno) player.draw(1);
 
         // record action
         self.record(player, 'uno');
@@ -132,20 +138,24 @@ var Uno = function(config){
     self.turn = function(){
         if(!self.is_started) throw new Error('Game has not started yet');
 
-        if(self.turn_data.skip > 0){
-            self.turn_data.skip--;
-            self.turn();
-        }else{
+        var found = false;
+        while(!found){
             var index = self.players.indexOf(self.player_turn),
                 next_index = self.turn_data.direction ? index + 1 : index - 1;
 
-            if(next_index > self.players.length){
+            if(next_index > self.players.length-1){
                 next_index = 0;
             }else if(next_index < 0){
                 next_index = self.players.length-1;
             }
 
             self.player_turn = self.players[next_index];
+            found = self.player_turn.cards.length > 0;
+        }
+
+        if(self.turn_data.skip > 0){
+            self.turn_data.skip--;
+            self.turn();
         }
     };
 
@@ -162,13 +172,13 @@ var Uno = function(config){
         // draw card(s) to each player
         for(var i=0; i<self.config.initial_player_cards; i++){
             for(var j=0; j<self.players.length; j++){
-                self.players[j].draw();
+                self.players[j].draw(1);
             }
         }
 
         // draw card and drop to pile for init card
         var card = Deck.pop(self.decks);
-        Deck.push(self.piles, card);
+        self.drop(null, card, {color: ['r', 'g', 'b', 'y'].random()});
 
         // set turn data
         self.turn_data.color = card.color;
@@ -179,8 +189,6 @@ var Uno = function(config){
 
         // mark game as started
         self.is_started = true;
-
-        self.turn();
     };
 
     // called when player leave game
@@ -216,17 +224,21 @@ var Uno = function(config){
             players = [];
 
         for(var i=0; i<self.players.length; i++){
-            players.push({
+            var pl = {
+                id: self.players[i].id,
                 name: self.players[i].name,
                 cards_length: self.players[i].cards.length,
-                is_uno: self.players[i].is_uno
-            })
+                is_uno: self.players[i].is_uno,
+                turn: self.player_turn ? self.player_turn == self.players[i] : false
+            };
+
+            if(player.id == self.players[i].id) pl.cards = self.players[i].cards;
+            players.push(pl);
         }
 
         data.name = self.name;
         data.is_started = self.is_started;
         data.creator = self.config.creator ? self.config.creator.name : '';
-        data.player = player;
         data.players = players;
         data.player_turn = self.player_turn ? self.player_turn.name : '';
         data.turn_data = self.turn_data;

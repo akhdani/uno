@@ -9,60 +9,85 @@ define([
     });
 
     return ['$scope', '$routeParams', '$log', '$socket', function($scope, $routeParams, $log, $socket){
-        $scope.game = {};
+        $scope.game = {
+            player: {},
+            players: [],
+            turn_data: {},
+            is_registered: false,
+            is_joined: false,
+            is_started: false
+        };
 
         $scope.register = function(){
-            $socket.emit('register', {name: 'test'}, function(e){
-                $log.error(e);
+            var name = prompt('Input your name');
+            $socket.emit('register', {name: name}, function(err, data){
+                if(!err){
+                    $scope.game.is_registered = true;
+                    $scope.game.player = data;
+                    $scope.$apply();
+                }
             });
         };
 
         $scope.join = function(){
-            $socket.emit('join', {}, function(e){
-                $log.error(e);
+            $socket.emit('join', {}, function(err, data){
+                $scope.game.is_joined = true;
+                $scope.$apply();
+                if(err) $log.error(err);
             });
         };
 
         $scope.leave = function(){
-            $socket.emit('leave', {}, function(e){
-                $log.error(e);
+            $socket.emit('leave', {}, function(err, data){
+                $scope.game.is_joined = false;
+                $scope.$apply();
+                if(err) $log.error(err);
             });
         };
 
         $scope.start = function(){
-            $socket.emit('start', {}, function(e){
-                $log.error(e);
+            $socket.emit('start', {}, function(err, data){
+                if(err) $log.error(err);
             });
         };
 
         $scope.stop = function(){
-            $socket.emit('stop', {}, function(e){
-                $log.error(e);
+            $socket.emit('stop', {}, function(err, data){
+                if(err) $log.error(err);
             });
         };
 
         $scope.draw = function(){
-            $socket.emit('draw', {}, function(e){
-                $log.error(e);
+            $socket.emit('draw', {}, function(err, data){
+                if(err) $log.error(err);
             });
         };
 
-        $scope.drop = function(){
-            $socket.emit('drop', {}, function(e){
-                $log.error(e);
+        $scope.drop = function(card){
+            var data = {
+                card: card,
+                action: {}
+            };
+            delete data.card.$$hashKey;
+
+            if(card.color == '*'){
+                data.action.color = prompt('Choose color (r, g, b, y)');
+            }
+
+            $socket.emit('drop', data, function(err, data){
+                if(err) $log.error(err);
             });
         };
 
         $scope.uno = function(){
-            $socket.emit('uno', {}, function(e){
-                $log.error(e);
+            $socket.emit('uno', {}, function(err, data){
+                if(err) $log.error(err);
             });
         };
 
         // listening on any change from server
         $socket.on('game', function(data){
-            $scope.game = data;
-            $log.debug($scope.game);
+            $scope.game = alt.extend($scope.game, data);
         });
     }];
 });

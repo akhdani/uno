@@ -55,10 +55,22 @@ var Deck = {
 
     // pop a card from a deck
     pop: function(deck, card){
-        card = card || deck[deck.length-1];
+        card = card || null;
 
-        var index = deck.indexOf(card);
-        deck = deck.splice(index, 1);
+        if(card){
+            var index = -1;
+            for(var i=0; i<deck.length; i++){
+                if(card.color == deck[i].color && card.number == deck[i].number){
+                    index = i;
+                    break;
+                }
+            }
+
+            deck.splice(index, 1);
+        }else{
+            card = deck[deck.length-1];
+            deck.splice(deck.length-1, 1);
+        }
 
         return card;
     },
@@ -73,6 +85,9 @@ var Deck = {
     wildcard: function(game, card, action){
         var data = game.turn_data;
 
+        data.color = card.color;
+        data.number = card.number;
+
         if(card.number == '*' && card.color == '*'){
             data.color = action.color;
         }else if(card.number == 'skip'){
@@ -82,23 +97,20 @@ var Deck = {
         }else if(card.number == '+2'){
             data.draw += 2;
         }else if(card.number == '+4'){
-            data.draw += 4;
             data.color = action.color;
-        }else{
-            data.color = card.color;
-            data.number = card.number;
+            data.draw += 4;
         }
     },
 
     // check is allow to drop card in pile, based on turn data
     isdroppable: function(data, card){
-        if(deck.color == '' && data.number == '') return true;
+        if(data.color == '' && data.number == '') return true;
 
         // normal case, no draw in turn data
         if(data.draw == 0){
             return card.color == '*' || data.color == card.color || data.number == card.number;
         }else{
-            return card.color == '+4' || (card.color == data.color && ['+2', 'skip', 'reverse'].indexOf(card.number) != -1);
+            return card.number == '+4' || (card.color == data.color && ['+2', 'skip', 'reverse'].indexOf(card.number) != -1);
         }
     }
 };

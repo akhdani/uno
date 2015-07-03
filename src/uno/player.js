@@ -1,8 +1,10 @@
-var Deck = require('./deck');
+var Deck = require('./deck'),
+    id = 0;
 
 module.exports = function(name){
     var self = this;
-    
+
+    self.id = id++;
     self.name = name;
     self.game = null;
     self.cards = [];
@@ -13,10 +15,14 @@ module.exports = function(name){
         if(self.game == null) throw new Error('Player ' + self.name + ' is not in game');
         if(self.game.is_started && self.game.player_turn !== self) throw new Error('Player ' + self.name + ' is not in turn');
 
-        num = num || 1;
+        num = num || self.game.turn_data.draw || 1;
         for(var i=0; i<num; i++){
             self.game.draw(self);
         }
+        self.game.turn_data.draw = 0;
+
+        // do next turn
+        if(self.game.is_started) self.game.turn();
     };
 
     // drop a card to pile
@@ -24,10 +30,19 @@ module.exports = function(name){
         if(self.game == null) throw new Error('Player ' + self.name + ' is not in game');
         if(self.game.player_turn !== self) throw new Error('Player ' + self.name + ' is not in turn');
 
-        var index = self.cards.indexOf(card);
+        var index = -1;
+        for(var i=0; i<self.cards.length; i++){
+            if(card.color == self.cards[i].color && card.number == self.cards[i].number){
+                index = i;
+                break;
+            }
+        }
         if(index === -1) throw new Error('Player ' + self.name + ' do not have card');
 
         self.game.drop(self, card, action);
+
+        // do next turn
+        if(self.game.is_started) self.game.turn();
     };
 
     // yell uno

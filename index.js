@@ -6,7 +6,7 @@ var Rx = require('rx'),
     Uno = require('./src/uno'),
     Player = require('./src/uno/player'),
     game = new Uno(),
-    players = [];
+    players = {};
 
 // Set static folder
 app.use(express.static("./src/client"));
@@ -14,97 +14,114 @@ app.use(express.static("./src/client"));
 // Http and socket listen port
 server.listen(process.env.PORT || 5000);
 
+// Broadcast function, loop through players
+var broadcast = function(){
+    for(var sid in players) if(players.hasOwnProperty(sid)){
+        players[sid].socket.emit('game', game.data(players[sid].data));
+    }
+};
+
 // Listening to socket
 io.on('connection', function (socket) {
-    socket.emit('game', game.data());
-
     // player register to server
     socket.on('register', function(data, fn){
         try{
-            players[socket.id] = new Player(data.name);
-            io.sockets.emit('game', game.data());
+            players[socket.id] = {
+                socket: socket,
+                data: new Player(data.name)
+            };
+            fn(null, players[socket.id].data);
         }catch(e){
-            fn(e);
+            fn(e.message, null);
         }
     });
 
     // player disconnect
     socket.on('disconnect', function(){
         try{
-            delete players[socket.id];
-            io.sockets.emit('game', game.data());
+            if(players[socket.id] && players[socket.id].data.game){
+                players[socket.id].data.leave();
+                delete players[socket.id];
+                broadcast();
+            }
         }catch(e){
-
+            console.log(e);
         }
     });
 
     // player join on game
     socket.on('join', function(data, fn){
         try{
-            game.join(players[socket.id]);
-            io.sockets.emit('game', game.data());
+            game.join(players[socket.id].data);
+            broadcast();
+            fn(null, null);
         }catch(e){
-            fn(e);
+            fn(e.message, null);
         }
     });
 
     // player leave game
     socket.on('leave', function(data, fn){
         try{
-            game.leave(players[socket.id]);
-            io.sockets.emit('game', game.data());
+            game.leave(players[socket.id].data);
+            broadcast();
+            fn(null, null);
         }catch(e){
-            fn(e);
+            fn(e.message, null);
         }
     });
 
     // player start game
     socket.on('start', function(data, fn){
         try{
-            game.start(players[socket.id]);
-            io.sockets.emit('game', game.data());
+            game.start(players[socket.id].data);
+            broadcast();
+            fn(null, null);
         }catch(e){
-            fn(e);
+            fn(e.message, null);
         }
     });
 
     // player stop game
     socket.on('stop', function(data, fn){
         try{
-            game.stop(players[socket.id]);
-            io.sockets.emit('game', game.data());
+            game.stop(players[socket.id].data);
+            broadcast();
+            fn(null, null);
         }catch(e){
-            fn(e);
+            fn(e.message, null);
         }
     });
 
     // player draw
     socket.on('draw', function(data, fn){
         try{
-            players[socket.id].draw(data.num);
-            io.sockets.emit('game', game.data());
+            players[socket.id].data.draw(data.num, data);
+            broadcast();
         }catch(e){
-            fn(e);
+            fn(e.message, null);
         }
     });
 
     // player drop
-    socket.on('drop', function(data){
+    socket.on('drop', function(data, fn){
         try{
-            players[socket.id].drop(data.card, data.action);
-            io.sockets.emit('game', game.data());
+            players[socket.id].data.drop(data.card, data.action);
+            broadcast();
+            fn(null, null);
         }catch(e){
-            fn(e);
+            fn(e.message, null);
         }
     });
 
     // player uno
     socket.on('uno', function(data, fn){
         try{
-            players[socket.id].uno();
-            io.sockets.emit('game', game.data());
+            players[socket.id].data.uno();
+            broadcast();
+            fn(null, null);
         }catch(e){
-            fn(e);
+            fn(e.message, null);
         }
     });
 });
