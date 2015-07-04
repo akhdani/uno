@@ -13,3 +13,5 @@ deploy:
   app: ars-uno
   on:
     repo: akhdani/uno
+notifications:
+  email: false

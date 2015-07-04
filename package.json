@@ -1,7 +1,7 @@
 {
-  "name": "Uno",
+  "name": "ars-uno",
   "version": "1.0.0",
-  "description": "Uno - Proof of Concept",
+  "description": "Uno - Let's have fun!",
   "main": "index.js",
   "scripts": {
     "test": "jest"
@@ -15,6 +15,17 @@
   "keywords": [
     "uno"
   ],
+  "author": "Nicky Irawan <nicky@akhdani.co.id>",
+  "contributors": [{
+    "name": "Jaka Indria Pratama",
+    "email": "jaka@akhdani.co.id"
+  }, {
+    "name": "Aria Enggar",
+    "email": "aria@akhdani.co.id"
+  }, {
+    "name": "Athia Saelan",
+    "email": "athia@akhdani.co.id"
+  }],
   "license": "MIT",
   "dependencies": {
     "chalk": "^1.1.0",
