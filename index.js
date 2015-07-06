@@ -3,8 +3,8 @@ var Rx = require('rx'),
     app = express(),
     server = require('http').Server(app),
     io = require('socket.io')(server),
-    Uno = require('./src/uno'),
-    Player = require('./src/uno/player'),
+    Uno = require('./src/server/uno'),
+    Player = require('./src/server/uno/player'),
     game = new Uno(),
     players = {};
 
@@ -52,7 +52,7 @@ io.on('connection', function (socket) {
     // player join on game
     socket.on('join', function(data, fn){
         try{
-            game.join(players[socket.id].data);
+            players[socket.id].data.join(game);
             broadcast();
             fn(null, null);
         }catch(e){
@@ -63,7 +63,7 @@ io.on('connection', function (socket) {
     // player leave game
     socket.on('leave', function(data, fn){
         try{
-            game.leave(players[socket.id].data);
+            players[socket.id].data.leave();
             broadcast();
             fn(null, null);
         }catch(e){
@@ -74,7 +74,7 @@ io.on('connection', function (socket) {
     // player start game
     socket.on('start', function(data, fn){
         try{
-            game.start(players[socket.id].data);
+            players[socket.id].data.start();
             broadcast();
             fn(null, null);
         }catch(e){
@@ -85,7 +85,7 @@ io.on('connection', function (socket) {
     // player stop game
     socket.on('stop', function(data, fn){
         try{
-            game.stop(players[socket.id].data);
+            players[socket.id].data.stop();
             broadcast();
             fn(null, null);
         }catch(e){

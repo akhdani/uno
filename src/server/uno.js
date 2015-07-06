@@ -83,7 +83,7 @@ var Uno = function(config){
 
         if(player) Deck.pop(player.cards, card);
         Deck.push(self.piles, card);
-        Deck.wildcard(self, card, action);
+        self.turn_data = Deck.wildcard(self.turn_data, card, action);
 
         // record action to game
         self.record(player, 'drop', {

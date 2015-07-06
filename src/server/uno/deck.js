@@ -82,24 +82,27 @@ var Deck = {
     },
 
     // wild card action returning data for next turn
-    wildcard: function(game, card, action){
-        var data = game.turn_data;
+    wildcard: function(turn_data, card, action){
+        var data = turn_data;
 
         data.color = card.color;
         data.number = card.number;
 
-        if(card.number == '*' && card.color == '*'){
+        if(card.color == '*'){
             data.color = action.color;
-        }else if(card.number == 'skip'){
+        }
+
+        if(card.number == 'skip'){
             data.skip = data.draw > 0 ? 0 : 1;
         }else if(card.number == 'reverse') {
             data.direction = !data.direction;
         }else if(card.number == '+2'){
             data.draw += 2;
         }else if(card.number == '+4'){
-            data.color = action.color;
             data.draw += 4;
         }
+
+        return data;
     },
 
     // check is allow to drop card in pile, based on turn data
@@ -108,7 +111,7 @@ var Deck = {
 
         // normal case, no draw in turn data
         if(data.draw == 0){
-            return card.color == '*' || data.color == card.color || data.number == card.number;
+            return card.color == '*' || card.number == '*' || data.color == card.color || data.number == card.number;
         }else{
             return card.number == '+4' || (card.color == data.color && ['+2', 'skip', 'reverse'].indexOf(card.number) != -1) || (card.number == data.number && ['+2', 'skip', 'reverse'].indexOf(card.number) != -1);
         }

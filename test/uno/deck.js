@@ -1,6 +1,6 @@
-jest.dontMock('../../src/uno/deck');
+jest.dontMock('../../src/server/uno/deck');
 
-var Deck = require('../../src/uno/deck');
+var Deck = require('../../src/server/uno/deck');
 
 describe('Deck', function(){
     it('should generate right number of card decks', function(){
@@ -50,5 +50,114 @@ describe('Deck', function(){
 
         Deck.push(cards, card);
         expect(Deck.pop(cards)).toBe(card);
+    });
+
+    it('should generate right turn data', function(){
+        var card = {};
+        var turn_data = {};
+
+        // normal card
+        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != '*'){
+            for(var j=0; j<10; j++){
+                card.number = j;
+                card.color = Deck.color[i];
+                turn_data = {};
+                turn_data = Deck.wildcard({}, card, {});
+                expect(turn_data.number).toBe(card.number);
+                expect(turn_data.color).toBe(card.color);
+            }
+        }
+
+        // card (*, *), choosing color
+        card = {number: '*', color: '*'};
+        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != '*'){
+            turn_data = {};
+            turn_data = Deck.wildcard({}, card, {color: Deck.color[i]});
+            expect(turn_data.number).toBe(card.number);
+            expect(turn_data.color).toBe(Deck.color[i]);
+        }
+
+        // card skip
+        card = {number: 'skip'};
+        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != '*'){
+            card.color = Deck.color[i];
+
+            // without draw in turn_data
+            turn_data = {};
+            turn_data = Deck.wildcard({}, card, {});
+            expect(turn_data.number).toBe(card.number);
+            expect(turn_data.color).toBe(Deck.color[i]);
+            expect(turn_data.skip).toBe(1);
+
+            // with draw in turn_data
+            turn_data = {};
+            turn_data = Deck.wildcard({draw: 2}, card, {});
+            expect(turn_data.number).toBe(card.number);
+            expect(turn_data.color).toBe(Deck.color[i]);
+            expect(turn_data.skip).toBe(0);
+        }
+
+        // card reverse
+        card = {number: 'reverse'};
+        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != '*'){
+            card.color = Deck.color[i];
+            turn_data = {};
+            turn_data = Deck.wildcard({direction: true}, card, {});
+            expect(turn_data.number).toBe(card.number);
+            expect(turn_data.color).toBe(Deck.color[i]);
+            expect(turn_data.direction).toBe(false);
+        }
+
+        // +2 card
+        card = {number: '+2'};
+        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != '*'){
+            card.color = Deck.color[i];
+            turn_data = {};
+            turn_data = Deck.wildcard({draw: i}, card, {});
+            expect(turn_data.number).toBe(card.number);
+            expect(turn_data.color).toBe(Deck.color[i]);
+            expect(turn_data.draw).toBe(i + 2);
+        }
+
+        // +4 card
+        card = {number: '+4', color: '*'};
+        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != '*'){
+            turn_data = {};
+            turn_data = Deck.wildcard({draw: i}, card, {color: Deck.color[i]});
+            expect(turn_data.number).toBe(card.number);
+            expect(turn_data.color).toBe(Deck.color[i]);
+            expect(turn_data.draw).toBe(i + 4);
+        }
+    });
+
+    it('should check isdroppable right', function(){
+        var card = {},
+            turn_data = {};
+
+        for(var i=0; i<Deck.color.length; i++){
+            for (var j = 0; j < Deck.number.length; j++) {
+                card = {number: Deck.number[j], color: Deck.color[i]};
+                card.number = card.color == '*' ? '*' : card.number;
+                card.color = card.number == '*' || card.number == '+4' ? '*' : card.color;
+
+
+                // empty turn data, any card is allow to drop
+                turn_data = {color: '', number: ''};
+                expect(Deck.isdroppable(turn_data, card)).toBe(true);
+
+                // card are allowed as long as the color is same
+                for(var k=0; k<Deck.color.length; k++) if(Deck.color[k] != '*'){
+                    // no draw in turn data
+                    turn_data = {color: Deck.color[k], number: '', draw: 0};
+                    expect(Deck.isdroppable(turn_data, card)).toBe(card.color == turn_data.color || card.color == '*');
+                }
+
+                // card are allowed as long as the number is same
+                for(var k=0; k<Deck.number.length; k++) if(Deck.number[k] != '*'){
+                    turn_data = {color: '', number: Deck.number[k], draw: 0};
+                    expect(Deck.isdroppable(turn_data, card)).toBe(card.number == turn_data.number || card.color == '*' || card.number == '*' || card.number == '+4');
+                }
+            }
+        }
     });
 });

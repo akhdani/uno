@@ -69,6 +69,13 @@ module.exports = function(name){
         self.game.stop(self);
     };
 
+    // join game
+    self.join = function(game){
+        if(self.game != null) throw new Error('Player ' + self.name + ' is already in game');
+
+        game.join(self, game.config.password);
+    };
+
     // leave game
     self.leave = function(){
         if(self.game == null) throw new Error('Player ' + self.name + ' is not in game');

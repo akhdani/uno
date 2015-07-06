@@ -1,8 +1,8 @@
-jest.dontMock('../src/uno');
-jest.dontMock('../src/uno/player');
+jest.dontMock('../src/server/uno');
+jest.dontMock('../src/server/uno/player');
 
-var Uno = require('../src/uno'),
-    Player = require('../src/uno/player');
+var Uno = require('../src/server/uno'),
+    Player = require('../src/server/uno/player');
 
 describe('Uno', function(){
     var game, player1, player2;
@@ -22,18 +22,9 @@ describe('Uno', function(){
     });
 
     it('should allow player(s) to join if game is not started', function(){
-        game.join(player1);
+        game.join(player2);
 
         game.start();
         expect(function(){ game.join(player2); }).toThrow();
-    });
-
-    it('', function(){
-        game.join(player2);
-        game.start();
-
-        console.log(player1.cards);
-        console.log(player2.cards);
-        console.log(game.piles);
     });
 });
