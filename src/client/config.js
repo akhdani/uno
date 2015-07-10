@@ -2,7 +2,7 @@ alt.application = 'prototyper';
 alt.version = '1.0.0';
 alt.environment = 'development';
 alt.urlArgs = alt.environment == 'production' ? '_v=' + alt.version : '_t=' + (+new Date());
-alt.serverUrl = 'http://192.168.0.36:5000/';
+alt.serverUrl = 'http://ars-uno.herokuapp.com/';
 alt.defaultUrl = 'play/';
 alt.github = {
     user: 'niwasmala',

@@ -9,12 +9,12 @@
     <div class="row-fluid">
         <div class="span6">
             <h3>Discard Pile</h3>
-            <img src="../../../../../uno/src/client/asset/img/cards/{{game.turn_data.number + game.turn_data.color}}.png" height="200" width="137">
+            <img data-ng-src="asset/img/cards/{{game.turn_data.number + game.turn_data.color}}.png" height="200" width="137">
             <!--<div>{{ game.turn_data.number + game.turn_data.color }}</div>-->
         </div>
         <div class="span6">
             <h3>Draw Pile</h3>
-            <img src="../../../../../uno/src/client/asset/img/cards/back.png" data-ng-dblclick="draw()" height="200" width="137">
+            <img src="asset/img/cards/back.png" data-ng-dblclick="draw()" height="200" width="137">
         </div>
     </div>
 
@@ -24,7 +24,7 @@
         <h4 style="{{player.turn ? 'color:red' : ''}}">{{ player.name }}</h4><span data-ng-if="player.id != game.player.id">{{ player.cards_length }} card(s).</span>
         <div data-ng-if="player.id == game.player.id">
             <!--<button data-ng-click="draw()" data-ng-disabled="!player.turn || player.cards_length == 0">Draw</button>-->
-            <img data-ng-repeat="card in player.cards" data-ng-mouseover="hoverIn(this)" data-ng-mouseleave="hoverOut(this)" data-ng-dblclick="drop(card)" src="../../../../../uno/src/client/asset/img/cards/{{card.number + card.color}}.png" style="display:inline;margin:5px;height:150px;width:103px">
+            <img data-ng-repeat="card in player.cards" data-ng-mouseover="hoverIn(this)" data-ng-mouseleave="hoverOut(this)" data-ng-dblclick="drop(card)" data-ng-src="asset/img/cards/{{card.number + card.color}}.png" style="display:inline;margin:5px;height:150px;width:103px">
             <!--<ul>
                 <li data-ng-repeat="card in player.cards">
                     <button data-ng-if="player.id == game.player.id" data-ng-click="drop(card)" data-ng-disabled="!player.turn">{{ card.number + card.color }}</button>
