@@ -57,7 +57,7 @@ describe('Deck', function(){
         var turn_data = {};
 
         // normal card
-        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != '*'){
+        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != 'wild'){
             for(var j=0; j<10; j++){
                 card.number = j;
                 card.color = Deck.color[i];
@@ -69,8 +69,8 @@ describe('Deck', function(){
         }
 
         // card (*, *), choosing color
-        card = {number: '*', color: '*'};
-        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != '*'){
+        card = {number: 'wild', color: 'wild'};
+        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != 'wild'){
             turn_data = {};
             turn_data = Deck.wildcard({}, card, {color: Deck.color[i]});
             expect(turn_data.number).toBe(card.number);
@@ -79,7 +79,7 @@ describe('Deck', function(){
 
         // card skip
         card = {number: 'skip'};
-        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != '*'){
+        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != 'wild'){
             card.color = Deck.color[i];
 
             // without draw in turn_data
@@ -99,7 +99,7 @@ describe('Deck', function(){
 
         // card reverse
         card = {number: 'reverse'};
-        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != '*'){
+        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != 'wild'){
             card.color = Deck.color[i];
             turn_data = {};
             turn_data = Deck.wildcard({direction: true}, card, {});
@@ -110,7 +110,7 @@ describe('Deck', function(){
 
         // +2 card
         card = {number: '+2'};
-        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != '*'){
+        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != 'wild'){
             card.color = Deck.color[i];
             turn_data = {};
             turn_data = Deck.wildcard({draw: i}, card, {});
@@ -120,8 +120,8 @@ describe('Deck', function(){
         }
 
         // +4 card
-        card = {number: '+4', color: '*'};
-        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != '*'){
+        card = {number: '+4', color: 'wild'};
+        for(var i=0; i<Deck.color.length; i++) if(Deck.color[i] != 'wild'){
             turn_data = {};
             turn_data = Deck.wildcard({draw: i}, card, {color: Deck.color[i]});
             expect(turn_data.number).toBe(card.number);
@@ -137,8 +137,8 @@ describe('Deck', function(){
         for(var i=0; i<Deck.color.length; i++){
             for (var j = 0; j < Deck.number.length; j++) {
                 card = {number: Deck.number[j], color: Deck.color[i]};
-                card.number = card.color == '*' ? '*' : card.number;
-                card.color = card.number == '*' || card.number == '+4' ? '*' : card.color;
+                card.number = card.color == 'wild' ? 'wild' : card.number;
+                card.color = card.number == 'wild' || card.number == '+4' ? 'wild' : card.color;
 
 
                 // empty turn data, any card is allow to drop
@@ -146,16 +146,16 @@ describe('Deck', function(){
                 expect(Deck.isdroppable(turn_data, card)).toBe(true);
 
                 // card are allowed as long as the color is same
-                for(var k=0; k<Deck.color.length; k++) if(Deck.color[k] != '*'){
+                for(var k=0; k<Deck.color.length; k++) if(Deck.color[k] != 'wild'){
                     // no draw in turn data
                     turn_data = {color: Deck.color[k], number: '', draw: 0};
-                    expect(Deck.isdroppable(turn_data, card)).toBe(card.color == turn_data.color || card.color == '*');
+                    expect(Deck.isdroppable(turn_data, card)).toBe(card.color == turn_data.color || card.color == 'wild');
                 }
 
                 // card are allowed as long as the number is same
-                for(var k=0; k<Deck.number.length; k++) if(Deck.number[k] != '*'){
+                for(var k=0; k<Deck.number.length; k++) if(Deck.number[k] != 'wild'){
                     turn_data = {color: '', number: Deck.number[k], draw: 0};
-                    expect(Deck.isdroppable(turn_data, card)).toBe(card.number == turn_data.number || card.color == '*' || card.number == '*' || card.number == '+4');
+                    expect(Deck.isdroppable(turn_data, card)).toBe(card.number == turn_data.number || card.color == 'wild' || card.number == 'wild' || card.number == '+4');
                 }
             }
         }
