@@ -1,7 +1,7 @@
 var Deck = {
     // registered color and number variation
-    color: ['r', 'g', 'b', 'y', '*'],
-    number: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+2', '+4', '*', 'skip', 'reverse'],
+    color: ['r', 'g', 'b', 'y', 'wild'],
+    number: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+2', '+4', 'wild', 'skip', 'reverse'],
 
     // generate deck as many as needed (parameter supplied)
     generate: function (num) {
@@ -20,17 +20,17 @@ var Deck = {
                         counter = 1;
 
                     switch (number) {
-                        case '*':
-                            counter = color == '*' ? 4 : 0;
+                        case 'wild':
+                            counter = color == 'wild' ? 4 : 0;
                             break;
                         case '+4':
-                            counter = color == '*' ? 4 : 0;
+                            counter = color == 'wild' ? 4 : 0;
                             break;
                         case '0':
-                            counter = color != '*' ? 1 : 0;
+                            counter = color != 'wild' ? 1 : 0;
                             break;
                         default:
-                            counter = color != '*' ? 2 : 0;
+                            counter = color != 'wild' ? 2 : 0;
                             break;
                     }
 
@@ -88,7 +88,7 @@ var Deck = {
         data.color = card.color;
         data.number = card.number;
 
-        if(card.color == '*'){
+        if(card.color == 'wild'){
             data.color = action.color;
         }
 
@@ -111,7 +111,7 @@ var Deck = {
 
         // normal case, no draw in turn data
         if(data.draw == 0){
-            return card.color == '*' || card.number == '*' || data.color == card.color || data.number == card.number;
+            return card.color == 'wild' || card.number == 'wild' || data.color == card.color || data.number == card.number;
         }else{
             return card.number == '+4' || (card.color == data.color && ['+2', 'skip', 'reverse'].indexOf(card.number) != -1) || (card.number == data.number && ['+2', 'skip', 'reverse'].indexOf(card.number) != -1);
         }

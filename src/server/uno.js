@@ -15,7 +15,7 @@ var Uno = function(config){
         name: config.name || '',
         password: config.password || null,
         num_of_decks: config.num_of_decks || 1,
-        initial_player_cards: config.initial_player_cards || 7,
+        initial_player_cards: config.initial_player_cards || 2,
         creator: config.creator,
         first_player: null
     };
@@ -90,6 +90,7 @@ var Uno = function(config){
             card: card,
             action: action
         });
+
     };
 
     // called by player who yell uno
@@ -138,8 +139,9 @@ var Uno = function(config){
     self.turn = function(){
         if(!self.is_started) throw new Error('Game has not started yet');
 
-        var found = false;
-        while(!found){
+        var i = 0,
+            found = false;
+        while(!found && i < self.players.length){
             var index = self.players.indexOf(self.player_turn),
                 next_index = self.turn_data.direction ? index + 1 : index - 1;
 
@@ -151,20 +153,28 @@ var Uno = function(config){
 
             self.player_turn = self.players[next_index];
             found = self.player_turn.cards.length > 0;
+            i++;
         }
 
-        if(self.turn_data.skip > 0){
-            self.turn_data.skip--;
-            self.turn();
+        if(!found && i == self.players.length){
+            self.stop();
+        }else{
+            if(self.turn_data.skip > 0){
+                self.turn_data.skip--;
+                self.turn();
+            }
         }
     };
 
     // flag is game started
     self.is_started = false;
 
+    // flag is game finish
+    self.is_finished = false;
+
     // start the game
     self.start = function(player){
-        if(self.is_started) throw new Error('Game already started');
+        if(self.is_started && !self.is_finished) throw new Error('Game already started');
 
         // generate cards in deck
         self.decks = Deck.shuffle(Deck.generate(self.config.num_of_decks));
@@ -179,10 +189,6 @@ var Uno = function(config){
         // draw card and drop to pile for init card
         var card = Deck.pop(self.decks);
         self.drop(null, card, {color: ['r', 'g', 'b', 'y'].random()});
-
-        // set turn data
-        self.turn_data.color = card.color;
-        self.turn_data.number = card.number;
 
         // set player turn
         self.player_turn = self.config.first_player ? self.config.first_player : self.players[0];
@@ -212,7 +218,7 @@ var Uno = function(config){
 
     // called when player stop the game
     self.stop = function(player){
-        self.is_started = false;
+        self.is_finished = true;
         self.players = [];
         self.decks = [];
         self.piles = [];

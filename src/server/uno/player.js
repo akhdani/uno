@@ -55,7 +55,7 @@ module.exports = function(name){
     // start game
     self.start = function(){
         if(self.game == null) throw new Error('Player ' + self.name + ' is not in game');
-        if(self.game.creator != self) throw new Error('Player is not the game creator');
+        if(self.game.config.creator != self) throw new Error('Player is not the game creator');
 
         self.game.start(self);
     };
@@ -63,7 +63,7 @@ module.exports = function(name){
     // stop game
     self.stop = function(){
         if(self.game == null) throw new Error('Player ' + self.name + ' is not in game');
-        if(self.game.creator != self) throw new Error('Player is not the game creator');
+        if(self.game.config.creator != self) throw new Error('Player is not the game creator');
         if(!self.game.is_started) throw new Error('Game is not started');
 
         self.game.stop(self);

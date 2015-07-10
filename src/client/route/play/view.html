@@ -1,25 +1,37 @@
 <button data-ng-click="register()" data-ng-disabled="game.player.name">Register</button>
 <button data-ng-click="join()" data-ng-disabled="!game.is_registered || (game.is_registered && game.is_joined)">Join</button>
 <button data-ng-click="leave()" data-ng-disabled="!game.is_registered || (game.is_registered && !game.is_joined)">Leave</button>
-<button data-ng-click="start()" data-ng-disabled="!game.is_registered || (game.is_registered && game.is_started) || (game.is_registered && !game.is_started && game.creator != game.player.name)">Start</button>
-<button data-ng-click="stop()" data-ng-disabled="!game.is_registered || (game.is_registered && !game.is_started) || (game.is_registered && game.is_started && game.creator != game.player.name)">Stop</button>
+<button data-ng-click="start()">Start</button>
+<button data-ng-click="stop()">Stop</button>
+<div data-ng-repeat="player in game.players">{{player.name}} has joined</div>
 
 <div data-ng-if="game.is_started">
-    <h3>Pile</h3>
-    <div>{{ game.turn_data.number + game.turn_data.color }}</div>
+    <div class="row-fluid">
+        <div class="span6">
+            <h3>Discard Pile</h3>
+            <img src="../../../../../uno/src/client/asset/img/cards/{{game.turn_data.number + game.turn_data.color}}.png" height="200" width="137">
+            <!--<div>{{ game.turn_data.number + game.turn_data.color }}</div>-->
+        </div>
+        <div class="span6">
+            <h3>Draw Pile</h3>
+            <img src="../../../../../uno/src/client/asset/img/cards/back.png" data-ng-dblclick="draw()" height="200" width="137">
+        </div>
+    </div>
 
     <h3>Players</h3>
     <div data-ng-repeat="player in game.players">
-        <h4>{{ player.name }}</h4>
-        <span data-ng-if="player.id != game.player.id">{{ player.cards_length }}</span>
+        <hr>
+        <h4 style="{{player.turn ? 'color:red' : ''}}">{{ player.name }}</h4><span data-ng-if="player.id != game.player.id">{{ player.cards_length }} card(s).</span>
         <div data-ng-if="player.id == game.player.id">
-            <button data-ng-click="draw()" data-ng-disabled="!player.turn || player.cards_length == 0">Draw</button>
-            <ul>
+            <!--<button data-ng-click="draw()" data-ng-disabled="!player.turn || player.cards_length == 0">Draw</button>-->
+            <img data-ng-repeat="card in player.cards" data-ng-mouseover="hoverIn(this)" data-ng-mouseleave="hoverOut(this)" data-ng-dblclick="drop(card)" src="../../../../../uno/src/client/asset/img/cards/{{card.number + card.color}}.png" style="display:inline;margin:5px;height:150px;width:103px">
+            <!--<ul>
                 <li data-ng-repeat="card in player.cards">
                     <button data-ng-if="player.id == game.player.id" data-ng-click="drop(card)" data-ng-disabled="!player.turn">{{ card.number + card.color }}</button>
                     <span data-ng-if="player.id != game.player.id">{{ card.number + card.color }}</span>
                 </li>
-            </ul>
+            </ul>-->
         </div>
+        <hr>
     </div>
 </div>

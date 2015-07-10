@@ -18,6 +18,12 @@ define([
             is_started: false
         };
 
+        $scope.hoverIn = function(){
+        };
+
+        $scope.hoverOut = function(){
+        };
+
         $scope.register = function(){
             var name = prompt('Input your name');
             $socket.emit('register', {name: name}, function(err, data){
@@ -64,13 +70,14 @@ define([
         };
 
         $scope.drop = function(card){
+
             var data = {
                 card: card,
                 action: {}
             };
             delete data.card.$$hashKey;
 
-            if(card.color == '*'){
+            if(card.color == 'wild'){
                 data.action.color = prompt('Choose color (r, g, b, y)');
             }
 

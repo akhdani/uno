@@ -106,10 +106,12 @@ io.on('connection', function (socket) {
     // player drop
     socket.on('drop', function(data, fn){
         try{
+            console.log('socketdrop',data);
             players[socket.id].data.drop(data.card, data.action);
             broadcast();
             fn(null, null);
         }catch(e){
+            console.log('socketerr',e);
             fn(e.message, null);
         }
     });
