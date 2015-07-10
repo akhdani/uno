@@ -15,7 +15,7 @@ var Uno = function(config){
         name: config.name || '',
         password: config.password || null,
         num_of_decks: config.num_of_decks || 1,
-        initial_player_cards: config.initial_player_cards || 2,
+        initial_player_cards: config.initial_player_cards || 7,
         creator: config.creator,
         first_player: null
     };
