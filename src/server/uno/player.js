@@ -29,6 +29,7 @@ module.exports = function(name){
     self.drop = function(card, action){
         if(self.game == null) throw new Error('Player ' + self.name + ' is not in game');
         if(self.game.player_turn !== self) throw new Error('Player ' + self.name + ' is not in turn');
+        if(self.cards.length === 0) throw new Error('Player ' + self.name + ' cards is empty');
 
         var index = -1;
         for(var i=0; i<self.cards.length; i++){

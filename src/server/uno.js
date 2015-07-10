@@ -61,19 +61,21 @@ var Uno = function(config){
 
     // called by player who draw a card
     self.draw = function(player){
-        // pop a card from deck
-        var card = Deck.pop(self.decks);
-        Deck.push(player.cards, card);
+        if(self.decks.length > 0){
+            // pop a card from deck
+            var card = Deck.pop(self.decks);
+            Deck.push(player.cards, card);
 
-        // check if decks is empty, reshuffle
-        if(self.decks.length == 0){
-            self.decks = self.piles.slice(0, self.piles.length-2);
-            self.piles.splice(0, self.piles.length-2);
-            Deck.shuffle(self.decks);
+            // check if decks is empty, reshuffle
+            if(self.decks.length == 0){
+                self.decks = self.piles.slice(0, self.piles.length-2);
+                self.piles.splice(0, self.piles.length-2);
+                Deck.shuffle(self.decks);
+            }
+
+            // record action to game
+            self.record(player, 'draw', card);
         }
-
-        // record action to game
-        self.record(player, 'draw', card);
     };
 
     // called by player who drop a card
