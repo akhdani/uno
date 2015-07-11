@@ -4,6 +4,7 @@
   "description": "Uno - Let's have fun!",
   "main": "index.js",
   "scripts": {
+    "postinstall": "bower install",
     "test": "jest"
   },
   "jest": {
