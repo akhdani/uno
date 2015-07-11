@@ -167,12 +167,18 @@ var Uno = function(config){
             }
         }
     };
+    //chat logs
+    self.chats = [];
 
     // flag is game started
     self.is_started = false;
 
     // flag is game finish
     self.is_finished = false;
+
+    self.chat = function(text){
+        self.chats.push(text);
+    };
 
     // start the game
     self.start = function(player){
@@ -252,6 +258,7 @@ var Uno = function(config){
         data.turn_data = self.turn_data;
         data.decks_length = self.decks.length;
         data.piles_length = self.piles.length;
+        data.chats = self.chats;
 
         return data;
     };

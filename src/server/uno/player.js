@@ -10,7 +10,7 @@ module.exports = function(name){
     self.cards = [];
     self.is_uno = false;
 
-    // draw a card(s) from deck
+    // draw a card(s) from draw pile
     self.draw = function(num){
         if(self.game == null) throw new Error('Player ' + self.name + ' is not in game');
         if(self.game.is_started && self.game.player_turn !== self) throw new Error('Player ' + self.name + ' is not in turn');
@@ -25,7 +25,7 @@ module.exports = function(name){
         if(self.game.is_started) self.game.turn();
     };
 
-    // drop a card to pile
+    // drop a card to discard pile
     self.drop = function(card, action){
         if(self.game == null) throw new Error('Player ' + self.name + ' is not in game');
         if(self.game.player_turn !== self) throw new Error('Player ' + self.name + ' is not in turn');
@@ -82,5 +82,10 @@ module.exports = function(name){
         if(self.game == null) throw new Error('Player ' + self.name + ' is not in game');
 
         self.game.leave(self);
+    };
+
+    self.chat = function(text){
+        if(self.game == null) throw new Error('Player ' + self.name + ' is not in game');
+        self.game.chat(text);
     };
 };

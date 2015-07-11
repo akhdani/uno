@@ -48,6 +48,16 @@ io.on('connection', function (socket) {
         }
     });
 
+    socket.on('chat', function(text, fn){
+        try{
+            players[socket.id].data.chat(text);
+            broadcast();
+            fn(null, null);
+        }catch(e){
+            fn(e.message, null);
+        }
+    });
+
     // player join on game
     socket.on('join', function(data, fn){
         try{
@@ -105,12 +115,10 @@ io.on('connection', function (socket) {
     // player drop
     socket.on('drop', function(data, fn){
         try{
-            console.log('socketdrop',data);
             players[socket.id].data.drop(data.card, data.action);
             broadcast();
             fn(null, null);
         }catch(e){
-            console.log('socketerr',e);
             fn(e.message, null);
         }
     });

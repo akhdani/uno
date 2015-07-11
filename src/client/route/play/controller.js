@@ -15,13 +15,9 @@ define([
             turn_data: {},
             is_registered: false,
             is_joined: false,
-            is_started: false
-        };
-
-        $scope.hoverIn = function(){
-        };
-
-        $scope.hoverOut = function(){
+            is_started: false,
+            chats : [],
+            message : ''
         };
 
         $scope.register = function(){
@@ -61,6 +57,13 @@ define([
             $socket.emit('stop', {}, function(err, data){
                 if(err) $log.error(err);
             });
+        };
+
+        $scope.chat = function(){
+            $socket.emit('chat',String($scope.game.player.name + ': ' +$scope.game.message), function(err,data){
+                $scope.game.message = '';
+                if(err) $log.error(err);
+            })
         };
 
         $scope.draw = function(){
